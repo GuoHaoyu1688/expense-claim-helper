@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1 — 2026-10-15
+
+- Restore native CSV archives containing large receipt and claim files within the existing bounded import limit.
+
 ## 0.1.0
 
 - Added local itineraries, receipt-linked expenses, configurable fictional policies, exact allowance calculations, and missing/duplicate receipt review.

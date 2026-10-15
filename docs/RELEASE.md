@@ -1,11 +1,9 @@
-# Version 0.1.0
+# Version 0.1.1
 
-Local travel expense review, transparent policy calculations, immutable claim reports, CLI, and MCP.
+Restore native CSV archives containing large receipt and claim files within the existing bounded import limit.
 
-Local verification: 36 tests passed; 91% measured coverage; Ruff lint and formatting checks passed. README quick start was exercised with fictional data.
+Local verification: 39 tests passed; 91% measured coverage. Ruff lint and formatting passed. Real workflow checks are recorded in the project documentation.
 
 ## Known limitations
 
 One currency and fictional policy defaults. POSIX receipt handling; built-in PDF font supports Latin text. Claimed records and approval history cannot be reversed. Reminders run on query. No invoice authentication, company submission, or bank integration.
-
-See README and AGENTS.md for installation, configuration, machine-readable CLI/MCP interfaces and operational boundaries.

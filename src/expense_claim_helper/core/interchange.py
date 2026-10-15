@@ -10,8 +10,10 @@ import re
 import sqlite3
 import tempfile
 import zipfile
+from contextlib import contextmanager
 from datetime import date
 from pathlib import Path, PurePosixPath
+from threading import RLock
 
 from .common import ClaimError, canonical, cents, money, timestamp
 from .policy import category
@@ -26,6 +28,20 @@ TABLES = [
     "claim_days",
     "payments",
 ]
+RECEIPT_IMPORT_BYTES = 20 * 1024 * 1024
+ARCHIVE_IMPORT_BYTES = 150 * 1024 * 1024
+_CSV_LOCK = RLock()
+
+
+@contextmanager
+def _csv_field_limit(maximum: int):
+    """Scope the process-wide CSV parser limit to the already bounded input."""
+    with _CSV_LOCK:
+        previous = csv.field_size_limit(maximum)
+        try:
+            yield
+        finally:
+            csv.field_size_limit(previous)
 
 
 class InterchangeMixin:
@@ -33,13 +49,16 @@ class InterchangeMixin:
         self, path: str, auto_match: bool = False, trip_id: int | None = None
     ) -> dict:
         source = Path(path).expanduser().absolute()
-        if source.stat().st_size > 20 * 1024 * 1024:
+        if source.stat().st_size > RECEIPT_IMPORT_BYTES:
             raise ClaimError("IMPORT_TOO_LARGE", "Receipt import exceeds 20 MiB")
         if source.suffix.lower() == ".json":
             payload = json.loads(source.read_text("utf-8-sig"))
             rows = payload.get("records") if isinstance(payload, dict) else payload
         else:
-            with source.open(encoding="utf-8-sig", newline="") as file:
+            with (
+                _csv_field_limit(RECEIPT_IMPORT_BYTES),
+                source.open(encoding="utf-8-sig", newline="") as file,
+            ):
                 rows = list(csv.DictReader(file))
         if not isinstance(rows, list) or len(rows) > 100000:
             raise ClaimError("INVALID_IMPORT", "Expected a bounded record list")
@@ -252,13 +271,16 @@ class InterchangeMixin:
 
     def import_archive(self, path: str) -> dict:
         source = Path(path)
-        if source.stat().st_size > 150 * 1024 * 1024:
+        if source.stat().st_size > ARCHIVE_IMPORT_BYTES:
             raise ClaimError("IMPORT_TOO_LARGE", "Archive exceeds 150 MiB")
         if source.suffix.lower() == "json" or source.suffix.lower() == ".json":
             payload = json.loads(source.read_text("utf-8-sig"))
         else:
             payload = {"tables": {name: [] for name in TABLES}, "files": {}}
-            with source.open(encoding="utf-8-sig", newline="") as file:
+            with (
+                _csv_field_limit(ARCHIVE_IMPORT_BYTES),
+                source.open(encoding="utf-8-sig", newline="") as file,
+            ):
                 for row in csv.DictReader(file):
                     value = json.loads(row["payload"])
                     entity = row["entity"]

@@ -4,7 +4,7 @@
   "python": "3.12.13",
   "ruff": "passed",
   "pytest": {
-    "passed": 36,
+    "passed": 39,
     "coverage_percent": 91
   },
   "acceptance": {
@@ -22,7 +22,17 @@
       "docx",
       "zip"
     ],
-    "receipt_findings_frozen_in_claim_and_envelope": true
+    "receipt_findings_frozen_in_claim_and_envelope": true,
+    "large_native_csv": {
+      "source_bytes": 1501219,
+      "restored_trips": 3,
+      "restored_expenses": 12,
+      "restored_claims": 1,
+      "restored_managed_files": 18,
+      "all_file_sha256_equal": true,
+      "portable_json_equal": true,
+      "idempotent_reimport": true
+    }
   },
   "browser": {
     "engine": "Chromium headless via Playwright",
