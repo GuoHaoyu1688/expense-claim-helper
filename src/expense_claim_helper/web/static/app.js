@@ -1,0 +1,39 @@
+'use strict';
+const $=id=>document.getElementById(id);
+let selected=null,selection=0,dashboard=null;
+$('year').value=new Date().getFullYear();
+const cash=cents=>(Number(cents)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+async function api(path,body){const response=await fetch(path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{});const result=await response.json();if(!result.ok)throw new Error(result.error.message);return result.data;}
+function message(text){$('message').textContent=text;}
+function text(tag,value,className){const node=document.createElement(tag);node.textContent=value;if(className)node.className=className;return node;}
+async function load(){
+ dashboard=await api('/api/dashboard?year='+$('year').value);const stats=dashboard.stats;
+ $('spent').textContent=stats.currency+' '+cash(stats.expense_cents);$('advanced').textContent=cash(stats.balance.advance_balance_cents);$('outstanding').textContent=cash(stats.balance.outstanding_claim_cents);$('days').textContent=stats.travel_days;
+ const tierSelect=$('trip-form').elements.city_tier, previousTier=tierSelect.value;tierSelect.replaceChildren();for(const tier of dashboard.tiers){const option=text('option',tier);option.value=tier;tierSelect.append(option);}if(dashboard.tiers.includes(previousTier))tierSelect.value=previousTier;
+ $('issues').textContent=dashboard.check.issue_count+' item(s) to review';$('trips').replaceChildren();
+ for(const trip of dashboard.trips){const button=text('button','',`trip${selected===trip.id?' selected':''}`);button.append(text('strong',trip.destination),text('span',trip.start_at.slice(0,10)+' — '+trip.end_at.slice(0,10)),text('span',trip.travel_days+' days · Tier '+trip.city_tier));button.onclick=()=>choose(trip.id).catch(e=>message(e.message));$('trips').append(button);}
+ $('claims').replaceChildren();
+ for(const claim of dashboard.claims){const item=text('article','','claim'),left=document.createElement('div'),actions=text('div','','claim-actions');left.append(text('strong',claim.code),text('p',claim.status+' · '+cash(claim.snapshot.totals.eligible_cents)+' eligible · '+cash(claim.outstanding_cents)+' outstanding'));
+  for(const format of Object.keys(claim.snapshot.artifacts)){const link=text('a',format.toUpperCase());link.href='/api/download?code='+encodeURIComponent(claim.code)+'&format='+format;link.download=claim.code+'.'+format;actions.append(link);}
+  const button=text('button','Update status');button.onclick=()=>{const form=$('status-form');form.elements.code.value=claim.code;form.elements.status.value=claim.status==='unsubmitted'?'submitted':claim.status==='submitted'?'approved':'paid';form.elements.amount.value=cash(claim.paid_cents).replaceAll(',','');form.elements.effective_date.value=new Date().toLocaleDateString('en-CA');$('status-dialog').showModal();};actions.append(button);item.append(left,actions);$('claims').append(item);
+ }
+ if(!dashboard.claims.length)$('claims').append(text('p','Build a claim from the preview when your trip is ready.','muted'));
+}
+async function choose(id){
+ const token=++selection,result=await api('/api/trip?id='+id);if(token!==selection)return;selected=id;$('empty').hidden=true;$('trip-detail').hidden=false;
+ $('purpose').textContent=result.trip.purpose_code+' · TIER '+result.trip.city_tier;$('destination').textContent=result.trip.destination;$('dates').textContent=result.trip.origin+' → '+result.trip.destination+' · '+result.trip.start_at.slice(0,10)+' — '+result.trip.end_at.slice(0,10);
+ $('expenses').replaceChildren();for(const expense of result.expenses){const row=document.createElement('tr'),label=document.createElement('td');label.append(text('strong',expense.category),text('small',expense.date));const receipt=document.createElement('td');receipt.append(text('span',expense.receipt_path?'Attached':'Missing',expense.receipt_path?'pill ok':'pill'));const review=document.createElement('td');const checks=dashboard.check.issues.find(item=>item.expense_id===expense.id)?.issues||[];const flags=[...new Set([...expense.flags,...checks])];if(flags.length)review.append(text('div',flags.join('; '),'flag'));if(!expense.claim_code){const button=text('button',expense.included?'Exclude':'Include');button.onclick=async()=>{try{await api('/api/review',{identifier:expense.id,included:!expense.included});await choose(id);message('Expense inclusion updated.');}catch(e){message(e.message);}};review.append(button);}else review.append(text('span','Claimed','pill ok'));row.append(label,receipt,text('td',cash(expense.amount_cents)),text('td',cash(expense.eligible_cents),expense.eligible_cents<expense.amount_cents?'flag':''),review);$('expenses').append(row);}
+ $('preview').replaceChildren();for(const detail of result.preview.details){const row=document.createElement('tr');for(const value of [detail.date,detail.category,cash(detail.amount_cents),cash(detail.eligible_cents),detail.flags.join('; ')])row.append(text('td',value));if(detail.flags.length)row.className='flag';$('preview').append(row);}
+ const totals=result.preview.totals;$('preview-totals').replaceChildren();for(const [label,value]of [['Recorded expenses',totals.amount_cents],['Daily allowances',totals.allowance_cents],['Eligible claim',totals.eligible_cents]]){const box=text('div',label);box.append(text('strong',cash(value)));$('preview-totals').append(box);}
+ await load();
+}
+function panel(preview){$('preview-panel').hidden=!preview;$('expense-panel').hidden=preview;$('preview-tab').classList.toggle('active',preview);$('expenses-tab').classList.toggle('active',!preview);}
+$('preview-tab').onclick=()=>panel(true);$('expenses-tab').onclick=()=>panel(false);
+$('new-trip').onclick=()=>$('trip-dialog').showModal();$('new-expense').onclick=()=>{const trip=dashboard.trips.find(t=>t.id===selected);$('expense-form').elements.expense_date.value=trip.start_at.slice(0,10);$('expense-dialog').showModal();};
+for(const button of document.querySelectorAll('[data-close]'))button.onclick=()=>$(button.dataset.close).close();
+$('trip-form').onsubmit=async event=>{event.preventDefault();const body=Object.fromEntries(new FormData(event.target));body.participants=Number(body.participants);try{const trip=await api('/api/trip',body);$('trip-dialog').close();await choose(trip.id);message('Trip saved.');}catch(e){message(e.message);$('trip-dialog').close();}};
+$('expense-form').onsubmit=async event=>{event.preventDefault();const body=Object.fromEntries(new FormData(event.target));body.trip_id=selected;body.nights=Number(body.nights);body.receipt=body.receipt||null;try{await api('/api/expense',body);$('expense-dialog').close();await choose(selected);message('Expense saved. Review any policy flags before building a claim.');}catch(e){message(e.message);$('expense-dialog').close();}};
+$('status-form').onsubmit=async event=>{event.preventDefault();const body=Object.fromEntries(new FormData(event.target));if(body.status!=='paid')delete body.amount;try{await api('/api/status',body);$('status-dialog').close();await load();message('Claim status saved.');}catch(e){message(e.message);$('status-dialog').close();}};
+$('build').onclick=async()=>{$('build').disabled=true;message('Building local claim files…');try{const claim=await api('/api/build',{trip_ids:[selected],formats:['xlsx','pdf','docx','zip']});await choose(selected);message('Claim '+claim.code+' is ready. Download its files below.');}catch(e){message(e.message);}finally{$('build').disabled=false;}};
+$('import').onclick=async()=>{try{const result=await api('/api/import-receipts',{path:$('receipt-path').value,auto_match:true});await load();if(selected)await choose(selected);message(`${result.imported} imported; ${result.unmatched} unmatched; ${result.excluded_duplicates} duplicates excluded.`);}catch(e){message(e.message);}};
+$('year').onchange=()=>load().catch(e=>message(e.message));load().catch(e=>message(e.message));

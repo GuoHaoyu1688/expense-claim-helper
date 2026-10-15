@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-15",
+  "platform": "macOS arm64",
+  "python": "3.12.13",
+  "ruff": "passed",
+  "pytest": {
+    "passed": 36,
+    "coverage_percent": 91
+  },
+  "acceptance": {
+    "hand_calculated_cases": 6,
+    "real_receipt_ocr_csv_rows": 11,
+    "included_ocr_rows": 10,
+    "excluded_duplicates": 1,
+    "ocr_expense_total_cents": 118000,
+    "actual_mcp_stdio_tools": 6,
+    "archive_json_csv_roundtrips": true,
+    "symlink_and_external_archive_paths_rejected": true,
+    "claim_formats": [
+      "xlsx",
+      "pdf",
+      "docx",
+      "zip"
+    ],
+    "receipt_findings_frozen_in_claim_and_envelope": true
+  },
+  "browser": {
+    "engine": "Chromium headless via Playwright",
+    "added_expense_cents": 1250,
+    "generated_claim_eligible_cents": 82800,
+    "pdf_downloaded": true,
+    "pdf_pages_visually_reviewed": 3,
+    "status_saved": "submitted",
+    "desktop": [
+      1280,
+      900
+    ],
+    "mobile": [
+      390,
+      844
+    ],
+    "mobile_cards_visually_reviewed": true,
+    "console_errors": 0
+  },
+  "quickstart": {
+    "seed_imported": 11,
+    "files_generated": 4,
+    "backup_generated": true
+  },
+  "limitations": [
+    "One currency and one employee/group per library",
+    "Fictional default policy must be replaced for real claims",
+    "No company submission, authenticity verification, bank sync or scheduled notifications",
+    "Claimed expenses and backwards transitions cannot be edited",
+    "PDF default font is Latin; use English codes or DOCX/XLSX for Unicode",
+    "POSIX Linux/macOS safe file operations; Windows unsupported"
+  ]
+}

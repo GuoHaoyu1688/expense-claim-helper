@@ -1,0 +1,243 @@
+[
+  {
+    "name": "add_trip",
+    "title": null,
+    "description": "Write an itinerary with ISO times; identical input reuses the trip.",
+    "inputSchema": {
+      "properties": {
+        "start_at": {
+          "title": "Start At",
+          "type": "string"
+        },
+        "end_at": {
+          "title": "End At",
+          "type": "string"
+        },
+        "origin": {
+          "title": "Origin",
+          "type": "string"
+        },
+        "destination": {
+          "title": "Destination",
+          "type": "string"
+        },
+        "city_tier": {
+          "default": "B",
+          "title": "City Tier",
+          "type": "string"
+        },
+        "purpose_code": {
+          "default": "SAMPLE",
+          "title": "Purpose Code",
+          "type": "string"
+        },
+        "participants": {
+          "default": 1,
+          "title": "Participants",
+          "type": "integer"
+        },
+        "transport": {
+          "default": "train",
+          "title": "Transport",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start_at",
+        "end_at",
+        "origin",
+        "destination"
+      ],
+      "title": "add_tripArguments",
+      "type": "object"
+    },
+    "outputSchema": null,
+    "icons": null,
+    "annotations": null,
+    "meta": null,
+    "execution": null
+  },
+  {
+    "name": "add_expense",
+    "title": null,
+    "description": "Write an expense and copy an optional local receipt. Money is a decimal string.",
+    "inputSchema": {
+      "properties": {
+        "trip_id": {
+          "title": "Trip Id",
+          "type": "integer"
+        },
+        "category_name": {
+          "title": "Category Name",
+          "type": "string"
+        },
+        "amount": {
+          "title": "Amount",
+          "type": "string"
+        },
+        "expense_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expense Date"
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Receipt"
+        },
+        "paid_by": {
+          "default": "employee",
+          "title": "Paid By",
+          "type": "string"
+        },
+        "nights": {
+          "default": 1,
+          "title": "Nights",
+          "type": "integer"
+        },
+        "travel_class": {
+          "default": "",
+          "title": "Travel Class",
+          "type": "string"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "trip_id",
+        "category_name",
+        "amount"
+      ],
+      "title": "add_expenseArguments",
+      "type": "object"
+    },
+    "outputSchema": null,
+    "icons": null,
+    "annotations": null,
+    "meta": null,
+    "execution": null
+  },
+  {
+    "name": "check_missing",
+    "title": null,
+    "description": "Read missing/orphan files, amount mismatches and duplicate/unmatched warnings.",
+    "inputSchema": {
+      "properties": {},
+      "title": "check_missingArguments",
+      "type": "object"
+    },
+    "outputSchema": null,
+    "icons": null,
+    "annotations": null,
+    "meta": null,
+    "execution": null
+  },
+  {
+    "name": "build_claim",
+    "title": null,
+    "description": "Write immutable claim snapshots and local reports; reserve claimed items.",
+    "inputSchema": {
+      "properties": {
+        "trip_ids": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Trip Ids",
+          "type": "array"
+        },
+        "formats": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Formats"
+        },
+        "month": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Month"
+        }
+      },
+      "required": [
+        "trip_ids"
+      ],
+      "title": "build_claimArguments",
+      "type": "object"
+    },
+    "outputSchema": null,
+    "icons": null,
+    "annotations": null,
+    "meta": null,
+    "execution": null
+  },
+  {
+    "name": "list_pending_claims",
+    "title": null,
+    "description": "Read reminders, unpaid amounts and employee advance balance.",
+    "inputSchema": {
+      "properties": {},
+      "title": "list_pending_claimsArguments",
+      "type": "object"
+    },
+    "outputSchema": null,
+    "icons": null,
+    "annotations": null,
+    "meta": null,
+    "execution": null
+  },
+  {
+    "name": "travel_days",
+    "title": null,
+    "description": "Read annual local-calendar travel days, capped at one day per date.",
+    "inputSchema": {
+      "properties": {
+        "year": {
+          "title": "Year",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "year"
+      ],
+      "title": "travel_daysArguments",
+      "type": "object"
+    },
+    "outputSchema": null,
+    "icons": null,
+    "annotations": null,
+    "meta": null,
+    "execution": null
+  }
+]

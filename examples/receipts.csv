@@ -1,0 +1,12 @@
+﻿id,date,amount,tax,currency,vendor,buyer,invoice_no,file,invoice_code,check_code,payment_method,category,note,status,duplicate_of
+FICTIONAL-001,2026-01-01,41.50,3.50,CNY,Example Cafe A,Example Co.,EXAMPLE0001,receipts/receipt-01.png,,,Card,Meals,,parsed,
+FICTIONAL-002,2026-01-02,58.50,3.50,CNY,Example Transit B,Example Co.,EXAMPLE0002,receipts/receipt-02.png,,,Card,Transport,,parsed,
+FICTIONAL-003,2026-01-03,75.50,3.50,CNY,Example Hotel C,Example Co.,EXAMPLE0003,receipts/receipt-03.png,,,Card,Lodging,,parsed,
+FICTIONAL-004,2026-01-04,92.50,3.50,CNY,Example Office D,Example Co.,EXAMPLE0004,receipts/receipt-04.png,,,Card,Office,,parsed,
+FICTIONAL-005,2026-01-05,109.50,3.50,CNY,Example Cafe E,Example Co.,EXAMPLE0005,receipts/receipt-05.png,,,Card,Meals,,parsed,
+FICTIONAL-006,2026-01-06,126.50,3.50,CNY,Example Transit F,Example Co.,EXAMPLE0006,receipts/receipt-06.png,,,Card,Transport,,parsed,
+FICTIONAL-007,2026-01-07,143.50,3.50,CNY,Example Hotel G,Example Co.,EXAMPLE0007,receipts/receipt-07.png,,,Card,Lodging,,parsed,
+FICTIONAL-008,2026-01-08,160.50,3.50,CNY,Example Office H,Example Co.,EXAMPLE0008,receipts/receipt-08.png,,,Card,Office,,parsed,
+FICTIONAL-009,2026-01-09,177.50,3.50,CNY,Example Cafe I,Example Co.,EXAMPLE0009,receipts/receipt-09.pdf,,,Card,Meals,,parsed,
+FICTIONAL-010,2026-01-10,194.50,3.50,CNY,Example Hotel J,Example Co.,EXAMPLE0010,receipts/receipt-10.pdf,,,Card,Lodging,,parsed,
+FICTIONAL-DUPLICATE,2026-01-01,41.50,3.50,CNY,Example Cafe A,Example Co.,EXAMPLE0001,receipts/receipt-01.png,,,Card,Meals,,parsed,FICTIONAL-001

@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+[project]
+name = "expense-claim-helper"
+version = "0.1.0"
+description = "Local travel expenses, policy checks and reimbursement claims"
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = ["PyYAML>=6", "openpyxl>=3.1,<4", "reportlab>=4", "python-docx>=1.1", "mcp>=1.20,<2"]
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-cov>=5", "ruff>=0.11", "pypdf>=5", "pypdfium2>=4.30,<6", "Pillow>=10"]
+[project.scripts]
+ech = "expense_claim_helper.cli:main"
+[tool.hatch.build.targets.wheel]
+packages = ["src/expense_claim_helper"]
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]

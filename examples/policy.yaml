@@ -1,0 +1,34 @@
+# Fictional example policy; replace with your own approved rules.
+version: 1
+currency: CNY
+day_rule: half_day
+cutoff_hour: 12
+same_day_half_hours: 6
+meal_mode: allowance
+local_transport_mode: allowance
+require_receipts:
+- flight
+- train
+- lodging
+- meeting
+- office
+- other
+tiers:
+  A:
+    lodging_per_night: '400.00'
+    meal_per_day: '80.00'
+    transport_per_day: '40.00'
+  B:
+    lodging_per_night: '300.00'
+    meal_per_day: '60.00'
+    transport_per_day: '30.00'
+  C:
+    lodging_per_night: '200.00'
+    meal_per_day: '50.00'
+    transport_per_day: '20.00'
+allowed_classes:
+  flight:
+  - economy
+  train:
+  - second
+  - standard
